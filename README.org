@@ -1,0 +1,12 @@
+* Crank a Decimal
+Simple Playdate application to get familiar with the Lua SDK.
+
+** Goals
+The main goal here is to get some practice with the SDK before more advanced projects and games. Most importantly:
+
+- Have a simple toy project to get familiar with the Lua SDK
+- Learn how to handle the values from the crank.
+- Experiment with simple settings and save them for later application invocations.
+- Experiment with custom data, like fonts and the cover image.
+- Make a small desktop utility that might prove useful as a calculator for at least hexadecimal, binary, and decimal. Maybe also octal. Might be super useful for my embedded and retro programming projects. Built to my preferences.
+
