@@ -8,7 +8,13 @@ import "CoreLibs/crank"
 import "CoreLibs/ui"
 import "CoreLibs/graphics"
 
-local inputType = "HEX"
+local availableInputTypes = {}
+availableInputTypes[1] = "DEC"
+availableInputTypes[2] = "HEX"
+availableInputTypes[3] = "BIN"
+availableInputTypes[4] = "OCT"
+
+local inputType = 1
 local currentInput = 10
 local SETTINGS = {}
 -- TODO: workaround until all settings show.
@@ -72,8 +78,9 @@ local function decimalToOctal(number)
 end
 
 function playdate.BButtonDown()
-   -- TODO: do the best way of cycling input specificiers
-   inputType = "BIN"
+   -- cycle the available input types
+   local maxInputTypes = table.getsize(availableInputTypes)
+   inputType = (inputType % maxInputTypes) + 1
 end
 
 function playdate.update()
@@ -88,22 +95,23 @@ function playdate.update()
    currentInput += crankMovement
    currentInput = math.max(0, currentInput)
 
-   -- TODO: maybe the
+   -- TODO: Maybe we should indicate what type we are currently inputing somewhere?
    local formatted
-   if "HEX" == inputType then
+   local currentInputType = availableInputTypes[inputType]
+   if "HEX" == currentInputType then
       formatted = string.format("%x", currentInput)
-   elseif "BIN" == inputType then
+   elseif "BIN" == currentInputType then
       formatted = decimalToBinary(currentInput)
-   elseif "OCT" == inputType then
+   elseif "OCT" == currentInputType then
       formatted = decimalToOctal(currentInput)
    else
       formatted = string.format("%d", currentInput)
    end
-   playdate.graphics.drawTextAligned(formatted, 370, 50, kTextAlignment.right)
+   playdate.graphics.drawTextAligned(formatted, 390, 30, kTextAlignment.right)
 
    -- TODO: when we have several inputs, move this to the next.
    -- TODO: have this selection blink and underline the current input perfectly
-   playdate.graphics.drawLine(300, 70, 360, 70)
+   playdate.graphics.drawLine(300, 50, 390, 50)
 
    -- TODO: make the sizing of the various results sized based upon how much is shown.
    --       do we maybe need a few different font sizes for that?
