@@ -42,6 +42,7 @@ init()
 
 -- utility function for converting to binary string
 local function decimalToBinary(number)
+   -- TODO: maybe tweak the size depending on the number of bits like the rest of the number? maybe only 8 bits is enough for the smallest numbers to avoid too much info on screen
    -- assuming 32 bits integers as specified by playdate docs
    local result = ""
    local currentNum = number
@@ -113,25 +114,28 @@ function playdate.update()
    -- TODO: have this selection blink and underline the current input perfectly
    playdate.graphics.drawLine(300, 50, 390, 50)
 
+   -- TODO: should probably  introduce a variable result or something that calculates the final result. Then use that from here.
+   local result = currentInput
+   
    -- TODO: make the sizing of the various results sized based upon how much is shown.
    --       do we maybe need a few different font sizes for that?
    playdate.graphics.drawText("Result: ", 5, 100)
    if SETTINGS.showDecimal then
-      local resultDecimal = string.format("Decimal: %d", currentInput)
+      local resultDecimal = string.format("Decimal: %d", result)
       playdate.graphics.drawText(resultDecimal, 5, 120)
    end
    if SETTINGS.showHex then
-      local resultHex = string.format("Hexadecimal: %x", currentInput)
+      local resultHex = string.format("Hexadecimal: %x", result)
       playdate.graphics.drawText(resultHex, 5, 140)
    end
    if SETTINGS.showBinary then
-      local binaryString = decimalToBinary(currentInput)
+      local binaryString = decimalToBinary(result)
       local resultBin = string.format("%s", binaryString)
       playdate.graphics.drawText("Binary:", 5, 160)
       playdate.graphics.drawText(resultBin, 5, 180)
    end
    if SETTINGS.showOctal then
-      local octalString = decimalToOctal(currentInput)
+      local octalString = decimalToOctal(result)
       local resultOct = string.format("Octal: %s", octalString)
       playdate.graphics.drawText(resultOct, 5, 200)
    end
@@ -140,4 +144,6 @@ function playdate.update()
    if playdate.isCrankDocked() then
       playdate.ui.crankIndicator:draw()
    end
+
+   -- TODO: a and b button indicators to show what they do
 end
