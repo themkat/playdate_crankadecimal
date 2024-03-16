@@ -5,6 +5,7 @@
 -- TODO: handling signed vs unsigned numbers?
 
 import "CoreLibs/crank"
+import "CoreLibs/ui"
 import "CoreLibs/graphics"
 
 local inputType = "HEX"
@@ -125,5 +126,10 @@ function playdate.update()
       local octalString = decimalToOctal(currentInput)
       local resultOct = string.format("Octal: %s", octalString)
       playdate.graphics.drawText(resultOct, 5, 200)
+   end
+
+   -- Usage hints
+   if playdate.isCrankDocked() then
+      playdate.ui.crankIndicator:draw()
    end
 end
