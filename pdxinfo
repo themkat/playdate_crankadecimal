@@ -1,0 +1,6 @@
+name=CrankaDecimal
+author=themkat
+description=Simple decimal, octal, hexadecimal and binary calculator
+bundleID=net.themkat.crankadecimal
+version=0.0.1
+imagePath=cards
