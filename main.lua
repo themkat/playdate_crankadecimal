@@ -95,10 +95,12 @@ function playdate.update()
    local crankMovement = playdate.getCrankTicks(8)
    currentInput += crankMovement
    currentInput = math.max(0, currentInput)
-
-   -- TODO: Maybe we should indicate what type we are currently inputing somewhere?
+   
+   -- Formatting the input according to type
+   -- TODO: signed vs unsigned
    local formatted
    local currentInputType = availableInputTypes[inputType]
+   playdate.graphics.drawText(currentInputType, 5, 5)
    if "HEX" == currentInputType then
       formatted = string.format("%x", currentInput)
    elseif "BIN" == currentInputType then
