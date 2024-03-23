@@ -1,7 +1,5 @@
 -- TODO: support doing various operations on at least two numbers? 
 
--- TODO: what is the best way to handle the current selection?
-
 -- TODO: handling signed vs unsigned numbers?
 
 import "CoreLibs/crank"
@@ -110,11 +108,11 @@ function playdate.update()
    else
       formatted = string.format("%d", currentInput)
    end
-   playdate.graphics.drawTextAligned(formatted, 390, 30, kTextAlignment.right)
+   playdate.graphics.drawTextAligned(formatted, 387, 30, kTextAlignment.right)
 
-   -- TODO: when we have several inputs, move this to the next.
-   -- TODO: have this selection blink and underline the current input perfectly
-   playdate.graphics.drawLine(300, 50, 390, 50)
+   -- TODO: make this selection cursor move if we have several selections
+   playdate.graphics.drawLine(390, 37, 395, 32)
+   playdate.graphics.drawLine(390, 37, 395, 42)
 
    -- TODO: should probably  introduce a variable result or something that calculates the final result. Then use that from here.
    local result = currentInput
