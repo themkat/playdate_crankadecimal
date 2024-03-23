@@ -34,6 +34,13 @@ local function init()
    systemMenu:addCheckmarkMenuItem("Show octal result", SETTINGS.showOctal, function(value)
                                       SETTINGS.showOctal = value
    end)
+
+   -- Set up drawing hints
+   local abhintImg = playdate.graphics.image.new("img/abhint")
+   local abhintSprite = playdate.graphics.sprite.new(abhintImg)
+   abhintSprite:setCenter(0,0)
+   abhintSprite:moveTo(0, 30)
+   abhintSprite:add()
 end
 
 init()
@@ -85,6 +92,7 @@ end
 function playdate.update()
    -- TODO: optimize. probably don't need to clear and update if nothing has changed.
    playdate.graphics.clear()
+   playdate.graphics.sprite.update()
 
    -- TODO: could we maybe show some usage hints? Any actions we could assign to a and b?
    --       maybe one could be switch input format?
@@ -98,7 +106,10 @@ function playdate.update()
    -- TODO: signed vs unsigned
    local formatted
    local currentInputType = availableInputTypes[inputType]
-   playdate.graphics.drawText(currentInputType, 5, 5)
+   playdate.graphics.drawText(currentInputType, 2, 5)
+   playdate.graphics.drawLine(0, 25, 32, 25)
+   playdate.graphics.drawLine(32, 0, 32, 90)
+   playdate.graphics.drawLine(0, 90, 400, 90)
    if "HEX" == currentInputType then
       formatted = string.format("%x", currentInput)
    elseif "BIN" == currentInputType then
