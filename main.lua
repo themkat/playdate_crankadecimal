@@ -38,9 +38,15 @@ local function init()
    -- Set up drawing hints
    local abhintImg = playdate.graphics.image.new("img/abhint")
    local abhintSprite = playdate.graphics.sprite.new(abhintImg)
-   abhintSprite:setCenter(0,0)
+   abhintSprite:setCenter(0, 0)
    abhintSprite:moveTo(0, 30)
    abhintSprite:add()
+
+   local arrowhintImg = playdate.graphics.image.new("img/arrowhint")
+   local arrowhintSprite = playdate.graphics.sprite.new(arrowhintImg)
+   arrowhintSprite:setCenter(0, 0)
+   arrowhintSprite:moveTo(0,62)
+   arrowhintSprite:add()
 end
 
 init()
@@ -108,8 +114,8 @@ function playdate.update()
    local currentInputType = availableInputTypes[inputType]
    playdate.graphics.drawText(currentInputType, 2, 5)
    playdate.graphics.drawLine(0, 25, 32, 25)
-   playdate.graphics.drawLine(32, 0, 32, 90)
-   playdate.graphics.drawLine(0, 90, 400, 90)
+   playdate.graphics.drawLine(32, 0, 32, 95)
+   playdate.graphics.drawLine(0, 95, 400, 95)
    if "HEX" == currentInputType then
       formatted = string.format("%x", currentInput)
    elseif "BIN" == currentInputType then
