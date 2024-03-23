@@ -17,24 +17,24 @@ availableInputTypes[4] = "OCT"
 local inputType = 1
 local currentInput = 10
 local SETTINGS = {}
--- TODO: workaround until all settings show.
-SETTINGS.showDecimal = true
+
+local function saveData()
+   playdate.datastore.write(SETTINGS)
+end
 
 -- Initialize various settings like menu items
 local function init()
+   SETTINGS = playdate.datastore.read() or {}
+   
    local systemMenu = playdate.getSystemMenu()
-   systemMenu:addCheckmarkMenuItem("Show binary result", false, function(value)
+   systemMenu:addCheckmarkMenuItem("Show binary result", SETTINGS.showBinary, function(value)
                                       SETTINGS.showBinary = value
    end)
-   systemMenu:addCheckmarkMenuItem("Show hexadecimal result", false, function(value)
+   systemMenu:addCheckmarkMenuItem("Show hexadecimal result", SETTINGS.showHex, function(value)
                                       SETTINGS.showHex = value
    end)
-   systemMenu:addCheckmarkMenuItem("Show octal result", false, function(value)
+   systemMenu:addCheckmarkMenuItem("Show octal result", SETTINGS.showOctal, function(value)
                                       SETTINGS.showOctal = value
-   end)
-   -- TODO: why aren't more showing after the third one?
-   systemMenu:addCheckmarkMenuItem("Show decimal result", false, function(value)
-                                      SETTINGS.showDecimal = value
    end)
 end
 
@@ -122,10 +122,8 @@ function playdate.update()
    -- TODO: make the sizing of the various results sized based upon how much is shown.
    --       do we maybe need a few different font sizes for that?
    playdate.graphics.drawText("Result: ", 5, 100)
-   if SETTINGS.showDecimal then
-      local resultDecimal = string.format("Decimal: %d", result)
-      playdate.graphics.drawText(resultDecimal, 5, 120)
-   end
+   local resultDecimal = string.format("Decimal: %d", result)
+   playdate.graphics.drawText(resultDecimal, 5, 120)
    if SETTINGS.showHex then
       local resultHex = string.format("Hexadecimal: %x", result)
       playdate.graphics.drawText(resultHex, 5, 140)
@@ -148,4 +146,9 @@ function playdate.update()
    end
 
    -- TODO: a and b button indicators to show what they do
+end
+
+-- Closing handling functions
+function playdate.gameWillTerminate()
+   saveData()
 end
