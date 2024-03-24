@@ -2,6 +2,8 @@
 
 -- TODO: handling signed vs unsigned numbers?
 
+-- TODO: any way to get the 0 and 1s to take up the same space in the view? Custom font?
+
 import "CoreLibs/crank"
 import "CoreLibs/ui"
 import "CoreLibs/graphics"
@@ -24,6 +26,9 @@ currentInput[2] = 69
 local availableOperations = {}
 availableOperations[1] = "+"
 availableOperations[2] = "-"
+availableOperations[3] = "AND"
+availableOperations[4] = "OR"
+availableOperations[5] = "XOR"
 local currentOperation = 1
 
 local selectionCrankTicks = {}
@@ -163,8 +168,14 @@ local function calculateMultiInputResult()
       return currentInput[1] + currentInput[2]
    elseif "-" == operation then
       return currentInput[1] - currentInput[2]
+   elseif "AND" == operation then
+      return currentInput[1] & currentInput[2]
+   elseif "OR" == operation then
+      return currentInput[1] | currentInput[2]
+   elseif "XOR" == operation then
+      return currentInput[1] ~ currentInput[2]
    else
-      -- Should never end up here unless something is unimplemented.
+      -- Should never end up here unless something is unimplemented. Ends up with runtime error
       -- (now I miss Rust match arms :( )
       return "WTF"
    end
