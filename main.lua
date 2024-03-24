@@ -6,15 +6,26 @@ import "CoreLibs/crank"
 import "CoreLibs/ui"
 import "CoreLibs/graphics"
 
+local SETTINGS = {}
+
 local availableInputTypes = {}
 availableInputTypes[1] = "DEC"
 availableInputTypes[2] = "HEX"
 availableInputTypes[3] = "BIN"
 availableInputTypes[4] = "OCT"
-
 local inputType = 1
-local currentInput = 10
-local SETTINGS = {}
+
+-- TODO: how to handle multiple input numbers and an operation? and how should we tweak it on and off?
+--       maybe a small bar at the top we can scroll/crank?
+-- TODO: maybe we should also add methods to actually calculate the final result as well?
+local currentInput = {}
+currentInput[1] = 0
+currentInput[2] = 69
+
+-- 0 indexed between 3 choices. Might be confusing as Lua is 1-indexed on arrays...
+local currentSelection = 0
+local isMultiInput = false
+
 
 local function saveData()
    playdate.datastore.write(SETTINGS)
@@ -93,50 +104,119 @@ local function decimalToOctal(number)
    return result
 end
 
+function playdate.AButtonDown()
+   isMultiInput = not isMultiInput
+
+   -- TODO: should we nullify the inputs somehow? maybe double for clear?
+   if not isMultiInput then
+      currentSelection = 0
+   end
+end
+
 function playdate.BButtonDown()
    -- cycle the available input types
    local maxInputTypes = table.getsize(availableInputTypes)
    inputType = (inputType % maxInputTypes) + 1
 end
 
+function playdate.leftButtonDown()
+   -- TODO: what amount is good here? For the big binary numbers, everything seems too small..
+   if 0 == currentSelection then
+      currentInput[1] += 0xff
+   elseif 2 == currentSelection then
+      currentInput[2] += 0xff
+   end
+end
+
+function playdate.rightButtonDown()
+   if 0 == currentSelection then
+      currentInput[1] -= 0xff
+   elseif 2 == currentSelection then
+      currentInput[2] -= 0xff
+   end
+end
+
+function playdate.upButtonDown()
+   if isMultiInput then
+      currentSelection = math.max(currentSelection - 1, 0)
+   end
+end
+
+function playdate.downButtonDown()
+   if isMultiInput then
+      currentSelection = math.min(currentSelection + 1, 2)
+   end
+end
+
+local function getResult()
+   if isMultiInput then
+      return currentInput[1] + currentInput[2]
+   else
+      return currentInput[1]
+   end
+end
+
+local function drawInputNumber(number, numberType, yPos)
+   local formatted
+      if "HEX" == numberType then
+      formatted = string.format("%x", number)
+   elseif "BIN" == numberType then
+      formatted = decimalToBinary(number)
+   elseif "OCT" == numberType then
+      formatted = decimalToOctal(number)
+   else
+      formatted = string.format("%d", number)
+   end
+   playdate.graphics.drawTextAligned(formatted, 387, yPos, kTextAlignment.right)
+end
+
+-- TODO: a bit unruly and should probably be cleaned up into helpers...
 function playdate.update()
    -- TODO: optimize. probably don't need to clear and update if nothing has changed.
    playdate.graphics.clear()
    playdate.graphics.sprite.update()
 
-   -- TODO: could we maybe show some usage hints? Any actions we could assign to a and b?
-   --       maybe one could be switch input format?
-
-   -- TODO: clean up into util functions
-   local crankMovement = playdate.getCrankTicks(8)
-   currentInput += crankMovement
-   currentInput = math.max(0, currentInput)
+   -- TODO: clean up into util functions. All additions etc. on current selections should probably be extracted. 
+   local crankMovement = playdate.getCrankTicks(16)
+   if 0 == currentSelection then
+      currentInput[1] += crankMovement
+      currentInput[1] = math.max(0, currentInput[1])
+   elseif 2 == currentSelection then
+      currentInput[2] += crankMovement
+      currentInput[2] = math.max(0, currentInput[2])
+   end
    
    -- Formatting the input according to type
    -- TODO: signed vs unsigned
-   local formatted
    local currentInputType = availableInputTypes[inputType]
    playdate.graphics.drawText(currentInputType, 2, 5)
    playdate.graphics.drawLine(0, 25, 32, 25)
    playdate.graphics.drawLine(32, 0, 32, 95)
    playdate.graphics.drawLine(0, 95, 400, 95)
-   if "HEX" == currentInputType then
-      formatted = string.format("%x", currentInput)
-   elseif "BIN" == currentInputType then
-      formatted = decimalToBinary(currentInput)
-   elseif "OCT" == currentInputType then
-      formatted = decimalToOctal(currentInput)
-   else
-      formatted = string.format("%d", currentInput)
-   end
-   playdate.graphics.drawTextAligned(formatted, 387, 30, kTextAlignment.right)
+   drawInputNumber(currentInput[1], currentInputType, 30)
 
+   -- Also draw the operation and second number if multi input
+   if isMultiInput then
+      playdate.graphics.drawText("+", 380, 50)
+      
+      drawInputNumber(currentInput[2], currentInputType, 70)
+   end
+   
+
+   -- TODO: Should probably combine the previous and this one. postponing for readability
+   if isMultiInput then
+      playdate.graphics.drawText("Op: Multi", 325, 5)
+   else
+      playdate.graphics.drawText("Op: Single", 325, 5)
+   end
+   
    -- TODO: make this selection cursor move if we have several selections
-   playdate.graphics.drawLine(390, 37, 395, 32)
-   playdate.graphics.drawLine(390, 37, 395, 42)
+   local yCurrentSelectionBase = 37 + (currentSelection * 20)
+   playdate.graphics.drawLine(390, yCurrentSelectionBase, 395, yCurrentSelectionBase - 5)
+   playdate.graphics.drawLine(390, yCurrentSelectionBase, 395, yCurrentSelectionBase + 5)
 
    -- TODO: should probably  introduce a variable result or something that calculates the final result. Then use that from here.
-   local result = currentInput
+   local result = getResult()
    
    -- TODO: make the sizing of the various results sized based upon how much is shown.
    --       do we maybe need a few different font sizes for that?
