@@ -78,6 +78,10 @@ end
 
 -- utility function for converting to an octal string
 local function decimalToOctal(number)
+   if 0 == number then
+      return "0"
+   end
+
    local result = ""
    local currentNum = number
    while currentNum > 0 do
