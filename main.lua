@@ -8,6 +8,7 @@ import "CoreLibs/graphics"
 
 local SETTINGS = {}
 
+-- stupid way to easily cycle between the different input types
 local availableInputTypes = {}
 availableInputTypes[1] = "DEC"
 availableInputTypes[2] = "HEX"
@@ -15,12 +16,20 @@ availableInputTypes[3] = "BIN"
 availableInputTypes[4] = "OCT"
 local inputType = 1
 
--- TODO: how to handle multiple input numbers and an operation? and how should we tweak it on and off?
---       maybe a small bar at the top we can scroll/crank?
--- TODO: maybe we should also add methods to actually calculate the final result as well?
+-- The user inputs
 local currentInput = {}
 currentInput[1] = 0
 currentInput[2] = 69
+-- TODO: best way to handle the operation we are currently doing.
+local availableOperations = {}
+availableOperations[1] = "+"
+availableOperations[2] = "-"
+local currentOperation = 1
+
+local selectionCrankTicks = {}
+selectionCrankTicks[1] = 16
+selectionCrankTicks[2] = 6
+selectionCrankTicks[3] = 16
 
 -- 0 indexed between 3 choices. Might be confusing as Lua is 1-indexed on arrays...
 local currentSelection = 0
@@ -148,9 +157,22 @@ function playdate.downButtonDown()
    end
 end
 
+local function calculateMultiInputResult()
+   local operation = availableOperations[currentOperation]
+   if "+" == operation then
+      return currentInput[1] + currentInput[2]
+   elseif "-" == operation then
+      return currentInput[1] - currentInput[2]
+   else
+      -- Should never end up here unless something is unimplemented.
+      -- (now I miss Rust match arms :( )
+      return "WTF"
+   end
+end
+
 local function getResult()
    if isMultiInput then
-      return currentInput[1] + currentInput[2]
+      return calculateMultiInputResult()
    else
       return currentInput[1]
    end
@@ -176,11 +198,14 @@ function playdate.update()
    playdate.graphics.clear()
    playdate.graphics.sprite.update()
 
-   -- TODO: clean up into util functions. All additions etc. on current selections should probably be extracted. 
-   local crankMovement = playdate.getCrankTicks(16)
+   -- TODO: clean up into util functions. All additions etc. on current selections should probably be extracted.
+   local crankMovement = playdate.getCrankTicks(selectionCrankTicks[currentSelection + 1])
    if 0 == currentSelection then
       currentInput[1] += crankMovement
       currentInput[1] = math.max(0, currentInput[1])
+   elseif 1 == currentSelection and 0 < crankMovement then
+      local numOperations = table.getsize(availableOperations)
+      currentOperation = (currentOperation % numOperations) + 1
    elseif 2 == currentSelection then
       currentInput[2] += crankMovement
       currentInput[2] = math.max(0, currentInput[2])
@@ -197,7 +222,7 @@ function playdate.update()
 
    -- Also draw the operation and second number if multi input
    if isMultiInput then
-      playdate.graphics.drawText("+", 380, 50)
+      playdate.graphics.drawTextAligned(availableOperations[currentOperation], 380, 50, kTextAlignment.right)
       
       drawInputNumber(currentInput[2], currentInputType, 70)
    end
