@@ -235,13 +235,10 @@ function playdate.update()
    local crankMovement = playdate.getCrankTicks(selectionCrankTicks[currentSelection + 1])
    if 0 == currentSelection then
       currentInput[1] += crankMovement
-      -- TODO: should the inputs be limited to positive numbers?
-      currentInput[1] = math.max(0, currentInput[1])
    elseif 1 == currentSelection then
       currentOperation = getNextOperationsValue(crankMovement)
    elseif 2 == currentSelection then
       currentInput[2] += crankMovement
-      currentInput[2] = math.max(0, currentInput[2])
    end
 
    shouldRedraw = shouldRedraw or (0 ~= crankMovement)
