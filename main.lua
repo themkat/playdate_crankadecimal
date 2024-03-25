@@ -121,10 +121,13 @@ end
 function playdate.AButtonDown()
    isMultiInput = not isMultiInput
 
-   -- TODO: should we nullify the inputs somehow? maybe double for clear?
    if not isMultiInput then
       currentSelection = 0
    end
+
+   -- also clear the inputs when switching
+   currentInput[1] = 0
+   currentInput[2] = 0
 end
 
 function playdate.BButtonDown()
