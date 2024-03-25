@@ -22,7 +22,7 @@ local inputType = 1
 local currentInput = {}
 currentInput[1] = 0
 currentInput[2] = 69
--- TODO: best way to handle the operation we are currently doing.
+-- Simple lookup table to cycle operations easily
 local availableOperations = {}
 availableOperations[1] = "+"
 availableOperations[2] = "-"
@@ -30,6 +30,9 @@ availableOperations[3] = "AND"
 availableOperations[4] = "OR"
 availableOperations[5] = "XOR"
 local currentOperation = 1
+
+-- table.getsize sometimes return wrong number, so making a constant
+local NUM_OPERATIONS = 5
 
 local selectionCrankTicks = {}
 selectionCrankTicks[1] = 16
@@ -206,6 +209,17 @@ local function drawInputNumber(number, numberType, yPos)
    playdate.graphics.drawTextAligned(formatted, 387, yPos, kTextAlignment.right)
 end
 
+-- Simple utility function for calculating the cycling of operations from the crank movement
+local function getNextOperationsValue(crankMovement)
+   if 0 < crankMovement then
+      return (currentOperation % NUM_OPERATIONS) + 1
+   elseif 0 > crankMovement then
+      return (((NUM_OPERATIONS - 1) + (currentOperation - 1) % NUM_OPERATIONS) % NUM_OPERATIONS) + 1
+   else
+      return currentOperation
+   end
+end
+
 -- TODO: a bit unruly and should probably be cleaned up into helpers...
 function playdate.update()
    -- TODO: optimize. probably don't need to clear and update if nothing has changed.
@@ -216,10 +230,10 @@ function playdate.update()
    local crankMovement = playdate.getCrankTicks(selectionCrankTicks[currentSelection + 1])
    if 0 == currentSelection then
       currentInput[1] += crankMovement
+      -- TODO: should the inputs be limited to positive numbers?
       currentInput[1] = math.max(0, currentInput[1])
-   elseif 1 == currentSelection and 0 < crankMovement then
-      local numOperations = table.getsize(availableOperations)
-      currentOperation = (currentOperation % numOperations) + 1
+   elseif 1 == currentSelection then
+      currentOperation = getNextOperationsValue(crankMovement)
    elseif 2 == currentSelection then
       currentInput[2] += crankMovement
       currentInput[2] = math.max(0, currentInput[2])
