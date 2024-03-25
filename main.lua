@@ -1,4 +1,3 @@
--- TODO: handling signed vs unsigned numbers?
 -- TODO: any way to get the 0 and 1s to take up the same space in the view? Custom font?
 
 import "CoreLibs/crank"
@@ -52,7 +51,7 @@ end
 -- Initialize various settings like menu items
 local function init()
    SETTINGS = playdate.datastore.read() or {}
-   
+
    local systemMenu = playdate.getSystemMenu()
    systemMenu:addCheckmarkMenuItem("Show binary result", SETTINGS.showBinary, function(value)
                                       SETTINGS.showBinary = value
@@ -231,7 +230,6 @@ end
 
 -- TODO: a bit unruly and should probably be cleaned up into helpers...
 function playdate.update()
-   -- TODO: clean up into util functions. All additions etc. on current selections should probably be extracted.
    local crankMovement = playdate.getCrankTicks(selectionCrankTicks[currentSelection + 1])
    if 0 == currentSelection then
       currentInput[1] += crankMovement
@@ -242,44 +240,34 @@ function playdate.update()
    end
 
    shouldRedraw = shouldRedraw or (0 ~= crankMovement)
-   
+
    if shouldRedraw then
       playdate.graphics.clear()
       playdate.graphics.sprite.update()
-   
+
       -- Formatting the input according to type
-      -- TODO: signed vs unsigned
       local currentInputType = availableInputTypes[inputType]
       playdate.graphics.drawText(currentInputType, 2, 5)
       playdate.graphics.drawLine(0, 25, 32, 25)
       playdate.graphics.drawLine(32, 0, 32, 95)
       playdate.graphics.drawLine(0, 95, 400, 95)
       drawInputNumber(currentInput[1], currentInputType, 30)
-      
+
       -- Also draw the operation and second number if multi input
       if isMultiInput then
+         playdate.graphics.drawText("Op: Multi", 325, 5)
          playdate.graphics.drawTextAligned(availableOperations[currentOperation], 380, 50, kTextAlignment.right)
          drawInputNumber(currentInput[2], currentInputType, 70)
-      end
-      
-      
-      -- TODO: Should probably combine the previous and this one. postponing for readability
-      if isMultiInput then
-         playdate.graphics.drawText("Op: Multi", 325, 5)
       else
          playdate.graphics.drawText("Op: Single", 325, 5)
       end
-      
-      -- TODO: make this selection cursor move if we have several selections
+
       local yCurrentSelectionBase = 37 + (currentSelection * 20)
       playdate.graphics.drawLine(390, yCurrentSelectionBase, 395, yCurrentSelectionBase - 5)
       playdate.graphics.drawLine(390, yCurrentSelectionBase, 395, yCurrentSelectionBase + 5)
-      
-      -- TODO: should probably  introduce a variable result or something that calculates the final result. Then use that from here.
+
       local result = getResult()
-      
-      -- TODO: make the sizing of the various results sized based upon how much is shown.
-      --       do we maybe need a few different font sizes for that?
+
       playdate.graphics.drawText("Result: ", 5, 100)
       local resultDecimal = string.format("Decimal: %d", result)
       playdate.graphics.drawText(resultDecimal, 5, 120)
