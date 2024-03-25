@@ -112,7 +112,7 @@ local function decimalToOctal(number)
 
    local result = ""
    local currentNum = number
-   while currentNum > 0 do
+   while math.abs(currentNum) > 0 do
       local nextDigit = currentNum & 7
       result = nextDigit .. result
       currentNum = currentNum >> 3
@@ -251,7 +251,6 @@ function playdate.update()
    -- Also draw the operation and second number if multi input
    if isMultiInput then
       playdate.graphics.drawTextAligned(availableOperations[currentOperation], 380, 50, kTextAlignment.right)
-      
       drawInputNumber(currentInput[2], currentInputType, 70)
    end
    
