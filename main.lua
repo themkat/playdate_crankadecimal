@@ -126,11 +126,11 @@ function playdate.AButtonDown()
 
    if not isMultiInput then
       currentSelection = 0
-   end
 
-   -- also clear the inputs when switching
-   currentInput[1] = 0
-   currentInput[2] = 0
+      -- also clear the inputs when switching from multiview
+      currentInput[1] = 0
+      currentInput[2] = 0
+   end
 end
 
 function playdate.BButtonDown()
