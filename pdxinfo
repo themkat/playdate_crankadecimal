@@ -2,5 +2,5 @@ name=CrankaDecimal
 author=themkat
 description=Simple decimal, octal, hexadecimal and binary calculator
 bundleID=net.themkat.crankadecimal
-version=0.0.1
+version=0.1.0
 imagePath=cards
