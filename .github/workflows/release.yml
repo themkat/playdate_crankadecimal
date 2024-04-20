@@ -26,5 +26,5 @@ jobs:
         with:
           name: Crank a Decimal ${{ github.ref_name }}
           body: "${{ github.ref_name }}"
-          artifacts: "crankadecimal.pdx"
+          artifacts: "crankadecimal.zip"
           tag: ${{ github.ref }}
