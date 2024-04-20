@@ -1,0 +1,28 @@
+name: Build and release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Playdate SDK tooling
+        uses: idleberg/setup-playdate-sdk@v3.0.0
+        with: 
+          sdk_version: '2.4.0'
+      - name: Build artifact
+        run: |
+          pdc . CrankaDecimal
+          zip crankadecimal.zip CrankaDecimal.pdx
+      - name: Create Github Release
+        uses: ncipollo/release-action@v1
+        with:
+          name: Crank a Decimal ${{ github.ref_name }}
+          body: "${{ github.ref_name }}"
+          artifacts: "crankadecimal.pdx"
+          tag: ${{ github.ref }}
