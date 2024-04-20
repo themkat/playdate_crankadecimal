@@ -20,7 +20,7 @@ jobs:
       - name: Build artifact
         run: |
           pdc . CrankaDecimal
-          zip crankadecimal.zip CrankaDecimal.pdx
+          zip -r crankadecimal.zip CrankaDecimal.pdx
       - name: Create Github Release
         uses: ncipollo/release-action@v1
         with:
