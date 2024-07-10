@@ -1,6 +1,9 @@
 * Crank a Decimal
 Simple Playdate application to get familiar with the Lua SDK.
 
+#+ATTR_ORG: :width 600
+[[./screenshot.png]]
+
 ** Goals
 The main goal here is to get some practice with the SDK before more advanced projects and games. Most importantly:
 
